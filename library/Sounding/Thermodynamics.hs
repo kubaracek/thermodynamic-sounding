@@ -1,35 +1,15 @@
 module Sounding.Thermodynamics where
 
-data Temp =
-    Celsius Double
-  | Kelvin Double
-  | Fahrenheit Double
+data DewpointTemp = DewpointTemp Celsius
+data ParcelTemp = ParcelTemp Celsius
+data ParcelTempLCL = ParcelTempLCL Celsius
 
-lclTemp :: Temp -> Temp -> Temp
-lclTemp parcelTemp dewpointParcelTemp =
-  undefined
+type Celsius = Double
 
-toCelsius :: Temp -> Temp
-toCelsius t =
-  case t of
-    Celsius _ ->
-      t
-    Kelvin temp ->
-      Celsius $ temp - 273.15
-    Fahrenheit temp ->
-       Celsius $ (5/9) * (temp + (-32))
-
-
-toKelvin :: Temp -> Temp
-toKelvin t =
+lclTemp :: ParcelTemp -> DewpointTemp -> ParcelTempLCL
+lclTemp (ParcelTemp parcelTemp) (DewpointTemp dewpointParcelTemp) =
   let
-    open :: Temp -> Double
-    open (Celsius temp) = temp
-    open (Kelvin temp) = temp
-    open (Fahrenheit temp) = temp
+    diff = parcelTemp - dewpointParcelTemp
+    dlt = diff * (1.2185 + 0.001278 * parcelTemp + diff * (-0.00219 + 1.173e-5 * diff - 0.0000052 * parcelTemp))
   in
-  case t of
-    Kelvin _ ->
-      t
-    _ ->
-      Kelvin (open (toCelsius t) + 273.15)
+    ParcelTempLCL (parcelTemp - dlt)
