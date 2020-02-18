@@ -19,10 +19,17 @@ toCelsius t =
     Fahrenheit temp ->
        Celsius $ (5/9) * (temp + (-32))
 
+
 toKelvin :: Temp -> Temp
 toKelvin t =
+  let
+    open :: Temp -> Double
+    open (Celsius temp) = temp
+    open (Kelvin temp) = temp
+    open (Fahrenheit temp) = temp
+  in
   case t of
     Kelvin _ ->
       t
     _ ->
-      Kelvin $ toCelsius t
+      Kelvin (open (toCelsius t) + 273.15)
